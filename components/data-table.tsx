@@ -190,16 +190,26 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => (
-      <Badge variant="outline" className="text-muted-foreground px-1.5">
-        {row.original.status === "Done" ? (
-          <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
-        ) : (
-          <IconLoader />
-        )}
-        {row.original.status}
-      </Badge>
-    ),
+    cell: ({ row }) => {
+      const status = row.original.status;
+      return (
+        <div className="w-24">
+          {status === "Done" ? (
+            <Badge variant="secondary" className="bg-green-50 text-green-600 hover:bg-green-100 border-none font-semibold">
+              Done
+            </Badge>
+          ) : status === "In Progress" ? (
+            <Badge variant="secondary" className="bg-blue-50 text-blue-600 hover:bg-blue-100 border-none font-semibold">
+              In Progress
+            </Badge>
+          ) : (
+             <Badge variant="secondary" className="bg-gray-100 text-gray-600 hover:bg-gray-200 border-none font-semibold">
+              {status}
+            </Badge>
+          )}
+        </div>
+      )
+    },
   },
   {
     accessorKey: "target",
@@ -479,7 +489,7 @@ export function DataTable({
         value="outline"
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
-        <div className="overflow-hidden rounded-lg border">
+        <div className="overflow-hidden rounded-lg border border-border/40">
           <DndContext
             collisionDetection={closestCenter}
             modifiers={[restrictToVerticalAxis]}
@@ -487,47 +497,59 @@ export function DataTable({
             sensors={sensors}
             id={sortableId}
           >
-            <Table>
-              <TableHeader className="bg-muted sticky top-0 z-10">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id} colSpan={header.colSpan}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      )
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody className="**:data-[slot=table-cell]:first:w-8">
-                {table.getRowModel().rows?.length ? (
-                  <SortableContext
-                    items={dataIds}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    {table.getRowModel().rows.map((row) => (
-                      <DraggableRow key={row.id} row={row} />
-                    ))}
-                  </SortableContext>
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
+            <div className="space-y-4">
+      <div className="table-container metronic-card">
+        <Table>
+          <TableHeader className="table-header">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="hover:bg-transparent border-b border-gray-200">
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id} colSpan={header.colSpan} className="h-12 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  )
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="table-row"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="py-3">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-muted-foreground"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
           </DndContext>
         </div>
         <div className="flex items-center justify-between px-4">

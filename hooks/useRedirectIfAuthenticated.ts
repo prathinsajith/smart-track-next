@@ -2,45 +2,58 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { setAccessToken } from "@/lib/auth";
+import { useAuthStore } from "@/stores/auth-store";
 
 /**
- * Custom hook to check if the user is already authenticated.
- * - If authenticated, redirects to /dashboard.
- * - Returns a `loading` state while checking.
+ * Custom hook to redirect logged-in users away from login/signup pages.
  */
 export const useRedirectIfAuthenticated = () => {
     const router = useRouter();
+    const { setToken, setUser, accessToken } = useAuthStore();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const checkSession = async () => {
+            // If accessToken already exists in store, redirect immediately
+            if (accessToken) {
+                router.replace("/dashboard");
+                setLoading(false);
+                return;
+            }
+
             try {
                 const res = await fetch("/api/auth/refresh", {
                     method: "POST",
-                    credentials: "include", // send HTTP-only cookie
+                    credentials: "include", // send refresh token cookie
                 });
 
                 if (res.ok) {
                     const data = await res.json();
+
                     if (data?.token) {
-                        setAccessToken(data.token); // store access token in memory
-                        router.replace("/dashboard"); // redirect logged-in user
+                        setToken(data.token);
+
+                        // Optionally fetch user info after refresh
+                        const userRes = await fetch("/api/user/me", {
+                            headers: { Authorization: `Bearer ${data.token}` },
+                        });
+                        if (userRes.ok) {
+                            const userData = await userRes.json();
+                            setUser(userData?.user);
+                        }
+
+                        router.replace("/dashboard");
                     }
-                } else if (res.status === 401) {
-                    // Normal: no valid refresh token, stay on login page
-                } else {
-                    console.error(`Unexpected response from refresh: ${res.status}`);
                 }
             } catch (err) {
-                console.error("Network or server error while refreshing token:", err);
+                console.log("No valid session. User stays on login page.");
             } finally {
                 setLoading(false);
             }
         };
 
         checkSession();
-    }, [router]);
+    }, [router, accessToken, setToken, setUser]);
 
     return loading;
 };

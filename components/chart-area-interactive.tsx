@@ -165,7 +165,7 @@ export function ChartAreaInteractive() {
   })
 
   return (
-    <Card className="@container/card">
+    <Card className="@container/card metronic-card">
       <CardHeader>
         <CardTitle>Total Visitors</CardTitle>
         <CardDescription>

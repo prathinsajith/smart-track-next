@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   IconChartBar,
   IconDashboard,
@@ -12,14 +12,19 @@ import {
   IconSettings,
   IconUsers,
   IconMenu2,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { VisuallyHidden } from "@/components/ui/visually-hidden"
+import { NavMain } from "@/components/nav-main";
+import { NavSecondary } from "@/components/nav-secondary";
+import { NavUser } from "@/components/nav-user";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import {
   SidebarContent,
   SidebarFooter,
@@ -27,62 +32,18 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { NAVBAR_DATA } from "@/lib/constant";
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
-    },
-    {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
-  ],
+import { User } from "@/stores/auth-store";
+
+interface MobileSidebarProps {
+  user: User | null;
 }
+const data = NAVBAR_DATA;
 
-export function MobileSidebar() {
-  const [open, setOpen] = React.useState(false)
+export function MobileSidebar({ user }: MobileSidebarProps) {
+  const [open, setOpen] = React.useState(false);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -125,10 +86,10 @@ export function MobileSidebar() {
             </nav>
           </SidebarContent>
           <SidebarFooter className="border-t p-4">
-            <NavUser user={data.user} />
+            <NavUser user={user} />
           </SidebarFooter>
         </div>
       </SheetContent>
     </Sheet>
-  )
+  );
 }

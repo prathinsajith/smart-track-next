@@ -1,21 +1,14 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
-  IconChartBar,
-  IconDashboard,
-  IconFolder,
-  IconHelp,
-  IconInnerShadowTop,
-  IconListDetails,
-  IconSearch,
-  IconSettings,
-  IconUsers,
-} from "@tabler/icons-react"
 
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+  IconInnerShadowTop,
+} from "@tabler/icons-react";
+
+import { NavMain } from "@/components/nav-main";
+import { NavSecondary } from "@/components/nav-secondary";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -24,64 +17,23 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import Link from "next/link"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
+import { NAVBAR_DATA } from "@/lib/constant";
+import { User } from "@/stores/auth-store";
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
-    },
-    {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
-  ],
+const data = NAVBAR_DATA;
+
+interface MainSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  user: User | null;
 }
 
-export function MainSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function MainSidebar({
+  user,
+  ...props
+}: MainSidebarProps) {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="offcanvas" className="border-r border-border/40" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -89,7 +41,7 @@ export function MainSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <Link href="#" aria-label="Acme Inc. Homepage">
+              <Link href="/dashboard" aria-label="Acme Inc. Homepage">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Acme Inc.</span>
               </Link>
@@ -106,8 +58,8 @@ export function MainSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
         </nav>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

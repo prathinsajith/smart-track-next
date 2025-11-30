@@ -1,4 +1,10 @@
-"use client";
+import { AxiosError } from "axios";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -12,16 +18,13 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { IconExclamationCircle } from "@tabler/icons-react";
+
 import { api } from "@/lib/axios";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginSchema } from "@/schemas/auth";
-import { setAccessToken } from "@/lib/auth";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import Link from "next/link";
-import { AxiosError } from "axios";
-import { useState } from "react";
+import { useAuthStore } from "@/stores/auth-store";
+import { LoginResponse, UserResponse, ApiErrorResponse } from "@/types/api";
 
 export function LoginForm({
   className,
@@ -29,6 +32,8 @@ export function LoginForm({
 }: React.ComponentProps<"form">) {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
+
+  const { setToken, setUser } = useAuthStore();
 
   const {
     register,
@@ -39,58 +44,97 @@ export function LoginForm({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginSchema) => {
-    // Clear any previous server error
+  const onSubmit = async (data: LoginSchema): Promise<void> => {
     setServerError(null);
 
     try {
-      const res = await api.post("/api/login", data, {
-        headers: {
-          "Content-Type": "application/json",
-          "x-skip-redirect": "true",
-        },
-      });
-
+      // Login request with proper typing
+      const res = await api.post<LoginResponse>("/api/login", data);
       const { token, refresh_token } = res.data;
 
-      // Store access token in memory
-      setAccessToken(token);
+      // Save access token in store
+      setToken(token);
 
-      // Store refresh token in HTTP-only cookie
+      // Save refresh token in HTTP-only cookie
       await fetch("/api/auth/store-refresh", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refresh_token }),
       });
 
-      // Show success message
-      toast.success("Login successful!");
+      // Fetch user details
+      const userRes = await api.get("/api/user/me");
+
+      const rawUser = userRes.data?.user || [];
+
+      const user = {
+        ...rawUser,
+        fullName: rawUser.fullName || 'User'
+      };
+
+      setUser(user);
+
+      toast.success(`Welcome back, ${user.fullName}!`);
 
       // Redirect to dashboard
       router.push("/dashboard");
-    } catch (err: unknown) {
-      const error = err as AxiosError<{
-        message?: string;
-        errors?: Record<string, string>;
-      }>;
+    } catch (err) {
+      // Comprehensive error handling for production
+      if (err instanceof AxiosError) {
+        const errorData = err.response?.data as ApiErrorResponse | undefined;
 
-      // Field-specific validation errors
-      if (error.response?.data?.errors) {
-        Object.entries(error.response.data.errors).forEach(
-          ([field, message]) => {
-            setError(field as keyof LoginSchema, {
-              message: message as string,
-            });
-          }
-        );
-      } else {
-        // Generic error
-        const errorMessage =
-          error.response?.data?.message || "Login failed. Please try again.";
-        setServerError(errorMessage);
-        toast.error(errorMessage);
+        // Field-level validation errors from backend
+        if (errorData?.errors) {
+          Object.entries(errorData.errors).forEach(([field, message]) => {
+            // Validate field exists in schema before setting error
+            if (field in loginSchema.shape) {
+              const errorMessage = Array.isArray(message) ? message[0] : message;
+              setError(field as keyof LoginSchema, {
+                message: errorMessage,
+              });
+            }
+          });
+          return;
+        }
+
+        // Server error messages
+        if (errorData?.message) {
+          setServerError(errorData.message);
+          toast.error(errorData.message);
+          return;
+        }
+
+        // Network timeout errors
+        if (err.code === "ECONNABORTED") {
+          const msg = "Request timeout. Please check your connection and try again.";
+          setServerError(msg);
+          toast.error(msg);
+          return;
+        }
+
+        // Network errors (no response from server)
+        if (!err.response) {
+          const msg = "Network error. Please check your internet connection.";
+          setServerError(msg);
+          toast.error(msg);
+          return;
+        }
+
+        // HTTP error codes
+        if (err.response.status >= 500) {
+          const msg = "Server error. Please try again later.";
+          setServerError(msg);
+          toast.error(msg);
+          return;
+        }
       }
+
+      // Fallback for unexpected errors
+      const msg = "An unexpected error occurred. Please try again.";
+      setServerError(msg);
+      toast.error(msg);
+      console.error("Login error:", err);
     }
   };
 
@@ -101,21 +145,14 @@ export function LoginForm({
       {...props}
     >
       <FieldGroup>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Login to your account</h1>
-          <p className="text-muted-foreground text-sm text-balance">
-            Enter your email below to login to your account
-          </p>
-        </div>
+        {/* Header removed as it is handled by the page layout */}
 
-        {/* Server Error Display */}
         {serverError && (
-          <div
-            role="alert"
-            className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-600 dark:border-red-900 dark:bg-red-900/10 dark:text-red-400"
-          >
-            {serverError}
-          </div>
+          <Alert>
+            <IconExclamationCircle />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{serverError}</AlertDescription>
+          </Alert>
         )}
 
         {/* Username */}
@@ -134,43 +171,35 @@ export function LoginForm({
         <Field>
           <div className="flex items-center">
             <FieldLabel htmlFor="password">Password</FieldLabel>
-            <a
-              href="#"
-              onClick={(e) => e.preventDefault()}
+            <Link
+              href="/forgot-password"
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
-              Forgot your password?
-            </a>
+              Forgot password?
+            </Link>
           </div>
           <Input id="password" type="password" {...register("password")} />
           <FieldError errors={errors.password ? [errors.password] : []} />
         </Field>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <Field>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting} className="w-full font-bold">
             {isSubmitting ? (
               <>
                 Logging in <Spinner />
               </>
             ) : (
-              "Login"
+              "Sign In"
             )}
           </Button>
         </Field>
 
         <FieldSeparator>Or continue with</FieldSeparator>
 
-        {/* GitHub Login */}
         <Field>
           <Button variant="outline" type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path
-                d="M12 .297c-6.63 0-12 5.373-12 12..."
-                fill="currentColor"
-              />
-            </svg>
-            Login with GitHub
+            GitHub Login
           </Button>
 
           <FieldDescription className="text-center">
@@ -184,3 +213,4 @@ export function LoginForm({
     </form>
   );
 }
+

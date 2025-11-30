@@ -25,6 +25,7 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -43,80 +44,240 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/**
+ * Light Theme (Default)
+ * Primary Color: #12284c (Deep Navy Blue)
+ * Designed for maximum readability and professional appearance
+ */
 :root {
-  --radius: 0.625rem;
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* Metronic 8 Color Palette */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* Metronic Neutrals (Cool Grays) */
+  --color-gray-50: #f9f9fc;
+  --color-gray-100: #f1f1f4;
+  --color-gray-200: #e4e6ef;
+  --color-gray-300: #b5b5c3;
+  --color-gray-400: #a1a5b7;
+  --color-gray-500: #7e8299;
+  --color-gray-600: #5e6278;
+  --color-gray-700: #3f4254;
+  --color-gray-800: #181c32;
+  --color-gray-900: #131628;
+
+  /* Metronic Brand Colors */
+  --color-blue-50: #e1f0ff;
+  --color-blue-100: #c9e3ff;
+  --color-blue-500: #3699ff;
+  --color-blue-600: #155dfc;
+  /* Primary */
+  --color-blue-700: #006ae6;
+
+  --color-green-50: #e8fff3;
+  --color-green-100: #c9f7f5;
+  --color-green-500: #1bc5bd;
+  --color-green-600: #0bb783;
+
+  --color-red-50: #ffe2e5;
+  --color-red-100: #f8d7da;
+  --color-red-500: #f64e60;
+  --color-red-600: #ee2d41;
+
+  --color-yellow-50: #fff4de;
+  --color-yellow-100: #fff0c2;
+  --color-yellow-500: #ffa800;
+  --color-yellow-600: #ffc700;
+
+  /* Shadcn Theme Mapping to Metronic Colors */
+  --background: var(--color-white);
+  /* Light gray background for the app */
+  --foreground: var(--color-gray-800);
+
+  --card: var(--color-white);
+  --card-foreground: var(--color-gray-800);
+
+  --popover: var(--color-white);
+  --popover-foreground: var(--color-gray-800);
+
+  --primary: var(--color-blue-600);
+  --primary-foreground: var(--color-white);
+
+  --secondary: var(--color-gray-100);
+  --secondary-foreground: var(--color-gray-700);
+
+  --muted: var(--color-gray-100);
+  --muted-foreground: var(--color-gray-500);
+
+  --accent: var(--color-gray-100);
+  --accent-foreground: var(--color-gray-800);
+
+  --destructive: var(--color-red-500);
+  --destructive-foreground: var(--color-white);
+
+  --border: var(--color-gray-200);
+  /* Soften borders */
+  --input: var(--color-gray-200);
+  --ring: var(--color-blue-600);
+
+  --radius: 0.75rem;
+  /* 12px for cards */
+
+  /* Chart Colors */
+  --chart-1: var(--color-blue-600);
+  --chart-2: var(--color-green-500);
+  --chart-3: var(--color-yellow-500);
+  --chart-4: var(--color-red-500);
+  --chart-5: var(--color-gray-500);
+
+  /* Sidebar Colors */
+  --sidebar: var(--color-white);
+  --sidebar-foreground: var(--color-gray-600);
+  --sidebar-primary: var(--color-blue-600);
+  --sidebar-primary-foreground: var(--color-white);
+  --sidebar-accent: var(--color-blue-50);
+  --sidebar-accent-foreground: var(--color-blue-600);
+  --sidebar-border: var(--color-gray-200);
+  --sidebar-ring: var(--color-blue-600);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: var(--color-gray-900);
+  --foreground: var(--color-gray-50);
+
+  --card: var(--color-gray-800);
+  --card-foreground: var(--color-gray-50);
+
+  --popover: var(--color-gray-800);
+  --popover-foreground: var(--color-gray-50);
+
+  --primary: var(--color-blue-600);
+  --primary-foreground: var(--color-white);
+
+  --secondary: var(--color-gray-700);
+  --secondary-foreground: var(--color-gray-50);
+
+  --muted: var(--color-gray-800);
+  --muted-foreground: var(--color-gray-400);
+
+  --accent: var(--color-gray-700);
+  --accent-foreground: var(--color-gray-50);
+
+  --destructive: var(--color-red-500);
+  --destructive-foreground: var(--color-white);
+
+  --border: var(--color-gray-800);
+  /* Dark mode softer border */
+  --input: var(--color-gray-800);
+  --ring: var(--color-blue-600);
+
+  --sidebar: var(--color-gray-900);
+  --sidebar-foreground: var(--color-gray-400);
+  --sidebar-primary: var(--color-blue-600);
+  --sidebar-primary-foreground: var(--color-white);
+  --sidebar-accent: var(--color-gray-800);
+  --sidebar-accent-foreground: var(--color-white);
+  --sidebar-border: var(--color-gray-700);
+  --sidebar-ring: var(--color-blue-600);
 }
 
-@layer base {
+/* ... existing base styles ... */
+
+/* FullCalendar Custom Theme Overrides - Friendly Style */
+.fc {
+  --fc-border-color: var(--border);
+  --fc-button-text-color: var(--primary-foreground);
+  --fc-button-bg-color: var(--primary);
+  --fc-button-border-color: var(--primary);
+  --fc-button-hover-bg-color: oklch(from var(--primary) l c h / 0.9);
+  --fc-button-hover-border-color: oklch(from var(--primary) l c h / 0.9);
+  --fc-button-active-bg-color: oklch(from var(--primary) l c h / 0.8);
+  --fc-button-active-border-color: oklch(from var(--primary) l c h / 0.8);
+
+  /* Softer Event Styling */
+  --fc-event-bg-color: var(--chart-1);
+  /* Use friendly blue */
+  --fc-event-border-color: var(--chart-1);
+  --fc-today-bg-color: oklch(from var(--primary) l c h / 0.05);
+  /* Very subtle today highlight */
+  --fc-neutral-bg-color: var(--muted);
+  --fc-list-event-hover-bg-color: var(--muted);
+  --fc-page-bg-color: var(--card);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  /* ... existing theme vars ... */
+}
+
+/* ... existing root vars ... */
+
+/* Metronic 8 Style Utilities */
+
+/* Solid Card Style */
+.metronic-card {
+  @apply bg-card border-0 shadow-sm rounded-xl transition-all duration-200 hover:shadow-md;
+}
+
+/* Active State (Light Primary) */
+.metronic-active {
+  @apply bg-primary/10 text-primary font-semibold;
+}
+
+/* Data Table Styles - Metronic Style */
+.table-container {
+  @apply rounded-xl border border-border/40 bg-card text-card-foreground shadow-sm overflow-hidden;
+}
+
+.table-header {
+  @apply bg-gray-50 text-gray-400 font-bold text-[11px] uppercase tracking-wider border-b border-gray-200;
+}
+
+.table-row {
+  @apply transition-colors hover:bg-gray-50/50 data-[state=selected]:bg-muted/50 border-b border-gray-100 last:border-0;
+}
+
+.fc .fc-event {
+  @apply rounded-md shadow-sm border-0 px-2 py-0.5 text-white font-medium;
+  /* Pill shape with white text */
+}
+
+.fc .fc-toolbar-title {
+  @apply text-xl font-semibold tracking-tight text-foreground;
+}
+
+.fc .fc-button {
+  @apply font-medium text-sm px-4 py-2 rounded-full shadow-sm transition-all;
+  /* Rounded buttons */
+}
+
+.fc .fc-daygrid-day-number {
+  @apply text-sm font-medium text-muted-foreground p-2 no-underline;
+  /* Remove underline */
+}
+
+.fc .fc-col-header-cell-cushion {
+  @apply text-sm font-medium text-muted-foreground py-3 no-underline;
+  /* Remove underline */
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+  @apply border-border/30;
+  /* Extremely subtle grid lines */
+}
+
+
+/* Print Styles */
+@media print {
   * {
-    @apply border-border outline-ring/50;
+    @apply text-foreground bg-background;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply text-sm;
   }
 }
